@@ -1,0 +1,46 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.jsonschema2pojo:jsonschema2pojo-gradle-plugin:latest.integration'
+    }
+}
+
+plugins {
+    id 'idea'
+    id 'java'
+    id 'application'
+}
+
+apply plugin: 'jsonschema2pojo'
+
+
+jsonSchema2Pojo {
+    source = files("${sourceSets.main.output.resourcesDir}/schema")
+    includeJsr303Annotations = true
+    targetPackage = 'clients'
+}
+
+idea {
+    module {
+        sourceDirs += file("${projectDir}/src/generated/main/java")
+    }
+}
+
+mainClassName = 'clients.JsonSchemaProducer'
+
+repositories {
+    mavenCentral()
+    maven { url "http://packages.confluent.io/maven/" }
+    maven { url "https://jitpack.io" }
+}
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
+dependencies {
+    implementation("org.slf4j:slf4j-log4j12:1.7.32")
+    implementation("org.apache.kafka:kafka-clients:2.8.1")
+    implementation("io.confluent:kafka-json-schema-serializer:6.2.1")
+}
